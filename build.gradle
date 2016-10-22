@@ -1,0 +1,65 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'application'
+
+
+repositories {
+    mavenCentral()	
+}
+
+repositories {
+    mavenLocal()
+}
+
+tasks.withType(Compile) {
+	options.encoding = 'UTF-8'
+}
+
+dependencies {
+  compile fileTree(dir: 'libs', include: ['*.jar']),'log4j:log4j:1.2.17', 'mysql:mysql-connector-java:5.1.35'
+
+  testCompile 'junit:junit:4.11'
+}
+
+mainClassName = 'com.test.DbConnector'
+
+task copyLicense {
+    outputs.file new File("$buildDir/LICENSE")
+    doLast {
+        copy {
+            from "LICENSE"
+            into "$buildDir"
+        }
+    }
+}
+task copyJdbcNativDll {
+    outputs.file new File("$buildDir/bin/ntlmauth.dll")
+    doLast {
+        copy {
+            from "ntlmauth.dll"
+            into "$buildDir/bin"
+        }
+    }
+}
+
+task copyDatasource {
+	outputs.file new File("$buildDir/database.properties")
+    doLast {
+        copy {
+            from "database.properties"
+            into "$buildDir"
+        }
+    }
+}
+
+applicationDistribution.from(copyLicense) {
+    into ""
+}
+
+applicationDistribution.from(copyJdbcNativDll) {
+    into ""
+}
+
+applicationDistribution.from(copyDatasource) {
+    into ""
+}
